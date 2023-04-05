@@ -32,7 +32,7 @@ THIRD_APPS = [
 ]
 
 MY_APPS = [
-
+    'courses',
 ]
 
 INSTALLED_APPS = BASE_APPS + THIRD_APPS + MY_APPS
