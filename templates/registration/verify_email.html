@@ -1,0 +1,40 @@
+<h4>This is a base template, please customize it</h4>
+<h1 id="text_ok" style="display: none;">Congratulations, your account is activated!</h1>
+<h1 id="text_not_ok" style="display: none;">Something went wrong</h1>
+<!-- get context key -->
+<p style="display:none;" id="key">{{key}} </p>
+<p style="display:none;" id="BASE_URL">{{BASE_URL}} </p>
+<p style="display:none;" id="BASE_URL">{% csrf_token %} </p>
+
+<script>
+    var myHeaders = new Headers();
+
+    var formdata = new FormData();
+    key = document.getElementById("key").innerHTML;
+    BASE_URL = document.getElementById("BASE_URL").innerHTML;
+    formdata.append("key", key);
+    myHeaders.append("X-CSRFToken", "{{ csrf_token }}");
+
+    var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: formdata,
+    redirect: 'follow'
+    };
+    
+    function change_text(result) {
+        if (result == {"detail":"Not found."}) {
+            document.getElementById("text_ok").style.display = "none";
+            document.getElementById("text_not_ok").style.display = "block";
+        } else {
+            document.getElementById("text_ok").style.display = "block";
+            document.getElementById("text_not_ok").style.display = "none";
+        }
+
+    }
+
+    fetch(`${BASE_URL}/signup/account-confirm-email/${key}/`, requestOptions)
+    .then(response => response.text())
+    .then(result => change_text(result))
+    .catch(error => console.log('error', error));
+</script>
