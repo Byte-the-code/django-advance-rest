@@ -2,11 +2,7 @@ from dj_rest_auth.registration.serializers import VerifyEmailSerializer
 from dj_rest_auth.registration.views import RegisterView
 
 from allauth.account.views import ConfirmEmailView
-from allauth.account.models import EmailAddress
 
-from django.db.models.signals import post_save
-from django.contrib.auth.models import User
-from django.dispatch import receiver
 from django.shortcuts import render
 
 from rest_framework.response import Response
@@ -35,8 +31,9 @@ class CustomRegisterView(RegisterView):
         headers = self.get_success_headers(serializer.data)
         data = self.get_response_data(user)
 
-        user.first_name = request.data.get('first_name', None)
-        user.last_name = request.data.get('last_name', None)
+        user.first_name = request.data.get('first_name', '')
+        user.last_name = request.data.get('last_name', '')
+        user.user_type = request.data.get('user_type', 'buyer')
         user.save()
 
         if data:
@@ -49,9 +46,3 @@ class CustomRegisterView(RegisterView):
             response = Response(status=status.HTTP_204_NO_CONTENT, headers=headers)
 
         return response
-
-
-@receiver(post_save, sender=User)
-def create_profile(sender, instance, **kwargs):
-    if kwargs['created'] and instance.is_superuser:
-            EmailAddress.objects.create(user=instance, email=instance.email, verified=True, primary=True)
