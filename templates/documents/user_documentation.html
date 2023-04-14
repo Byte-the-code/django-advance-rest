@@ -1,0 +1,16 @@
+<h3>Hola {{name}}</h3>
+
+{% if status %}
+
+    Nos comunicamos de Ecommerce para informale que su documentacion a sido aprobada!
+    Felicidades, apartir de este momento ya puede comenzar a realizar ventas en nuestra plataforma
+
+{% else %}
+
+    Nos comunicamos de Ecommerce para informarle que lamentablmente su documentacion no a sido aprobada.
+    Debera volver a subir su documentacion para poder comenzar a operar en nuestra plataforma.
+    La razon de rechazo es: {{rejected_reason}}
+
+{% endif %}
+
+Ingrese a <a href="{{BASE_URL}}">{{BASE_URL}}</a> para comenzar a operar!
