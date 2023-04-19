@@ -22,3 +22,7 @@ class UserDocumentationListSerializer(serializers.ModelSerializer):
         model = UserDocumentation
         fields = ['id', 'user_full_name', 'document_type', 'document_identifier', 'front_image', 'back_image']
 
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'user_type', 'is_active']
