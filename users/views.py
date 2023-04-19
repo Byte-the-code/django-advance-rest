@@ -3,14 +3,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
+from django.db.models import Q, Count, Value, CharField
 from django.template.loader import render_to_string
+from django.db.models.functions import Concat
 from django.core.paginator import Paginator
 from django.core.mail import EmailMessage
 from django.conf import settings
-from django.db.models import Q
 
 from users.serializers import UserDocumentationUpdateSerializer, UserDocumentationSerializer, \
-    UserDocumentationListSerializer, UserListSerializer
+    UserDocumentationListSerializer, UserListSerializer, SellerListSerializer
 from users.models import UserDocumentation, User
 
 class UserDocumentationView(APIView):
@@ -140,3 +141,44 @@ class UserListView(APIView):
             'total_items':len(users),
             'total_pages':paginator.num_pages,
             'data':serializer.data}, status=status.HTTP_200_OK)
+
+class SellersListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            if request.user.is_staff:
+                if 'document_status' in request.query_params:
+                    sellers = (User.objects.filter(
+                                user_type = 'seller',
+                                documentation__status = request.query_params['document_status'])
+                                .order_by('id'))
+                else:
+                    sellers = User.objects.filter(user_type = 'seller').order_by('id')
+            else:
+                sellers = User.objects.filter(
+                            user_type = 'seller',
+                            documentation__status = 'Approved').order_by('id')
+
+            # sellers = sellers.annotate(products_count = Count('products'))
+
+            if 'search' in request.query_params:
+                search = request.query_params['search']
+                sellers = sellers.annotate(search_field = Concat(
+                                    'first_name', Value(' '), 
+                                    'last_name', Value(' '), 
+                                    'email', Value(' '),
+                                    output_field = CharField())).filter(search_field__icontains = search)
+            per_page = request.query_params.get('per_page', 5)
+            page = request.query_params.get('page', 1)
+            paginator = Paginator(sellers, per_page)
+            data = paginator.page(page)
+
+            serializer = SellerListSerializer(data, many=True)
+
+            return Response({'page':page, 'total_pages':paginator.num_pages, 
+                        'total_items':sellers.count(), 'data':serializer.data},
+                        status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'errors':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

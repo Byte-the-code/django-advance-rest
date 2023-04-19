@@ -26,3 +26,15 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'first_name', 'last_name', 'email', 'user_type', 'is_active']
+
+class SellerListSerializer(serializers.ModelSerializer):
+    # products_count = serializers.SerializerMethodField()
+    document_status = serializers.CharField(source = 'documentation.status')
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'document_status', 'date_joined']
+        # fields = ['id', 'first_name', 'last_name', 'email', 'products_count', 'date_joined']
+
+
+    # def get_products_count(self, obj):
+    #     return obj.products.count()
