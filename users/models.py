@@ -48,9 +48,7 @@ class UserDocumentation(models.Model):
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, **kwargs):
-    print(kwargs)
     if kwargs['created']:
         UserProfile.objects.create(user=instance)
         if instance.is_superuser:
             EmailAddress.objects.create(user=instance, email=instance.email, verified=True, primary=True)
-

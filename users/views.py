@@ -115,19 +115,33 @@ class UserListView(APIView):
             users = users.filter(user_type = user_type)
         
         if 'search' in request.query_params:
-            users = users.filter(
-                Q(first_name__icontains = request.query_params['search']) | # | = or
-                Q(last_name__icontains = request.query_params['search']) |
-                Q(email__icontains = request.query_params['search'])
-                )
+            # users = users.filter(
+            #     Q(first_name__icontains = request.query_params['search']) | # | = or
+            #     Q(last_name__icontains = request.query_params['search']) |
+            #     Q(email__icontains = request.query_params['search'])
+            #     )
+
+            users = (users.annotate(full_search_field = Concat('first_name', 
+                                                            Value(' '),'last_name', 
+                                                            Value(' '),'email',
+                                                            Value(' '),'last_name', 
+                                                            Value(' '),'first_name', 
+                                                            output_field = CharField()))
+                .filter(full_search_field__icontains = request.query_params['search']))
         
         if 'order_by' in request.query_params:
             order_by = request.query_params['order_by']
-            if order_by not in ['first_name', 'last_name', 'email', 'profile__birth_date']:
+            
+            prefix = ''
+            if order_by[0] == '-':
+                prefix = '-'
+                order_by = order_by[1:]
+
+            if order_by not in ['id', 'first_name', 'last_name', 'email', 'profile__birth_date']:
                 return Response({'error':'order_by must be first_name, last_name, email or profile__birth_date'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            users = users.order_by(order_by)
+            users = users.order_by(prefix + order_by)
     
         per_page = request.query_params.get('per_page', 5)
         page = int(request.query_params.get('page', 1))
