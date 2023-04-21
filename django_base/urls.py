@@ -17,5 +17,6 @@ urlpatterns = [
     re_path("signup/account-confirm-email/(?P<key>[\s\d\w().+-_',:&]+)/$", EmailVerification.as_view(), name='account_confirm_email'),
 
     path('users/', include('users.urls')),
+    path('admin-settings/', include('admin_settings.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
