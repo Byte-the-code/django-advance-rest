@@ -1,19 +1,26 @@
 from django.urls import path
 
-from admin_settings.views import CategoryListAPIView, ColorListAPIView, MeasureUnitListCreateApiView,\
-    SubCategoryListApiView, ColorCreateApiView, ColorRetrieveApiView, ColorUpdateApiView,\
-    ColorDestroyApiView, MeasureUnitRetrieveUpdateDestroyAPIView
+from admin_settings.views import ColorListAPIView, ColorCreateAPIView, ColorRetrieveAPIView, \
+    ColorUpdateAPIView, ColorDestroyAPIView, MeasureUnitListCreateAPIView, \
+    MeasureUnitRetrieveUpdateDestroyAPIView, CategoryListCreateAPIView, CategoryRetrieveUpdateDestroyAPIView, \
+    SubCategoryListCreateAPIView, SubCategoryRetrieveUpdateDestroyAPIView
 
 urlpatterns = [
-    path('colors/', ColorListAPIView.as_view(), name='color'),
-    path('color/create/', ColorCreateApiView.as_view(), name = 'create-color'),
-    path('color/detail/<int:pk>/', ColorRetrieveApiView.as_view(), name = 'retrieve-color'),
-    path('color/update/<int:pk>/', ColorUpdateApiView.as_view(), name = 'update-color'),
-    path('color/destroy/<int:pk>/', ColorDestroyApiView.as_view(), name = 'destroy-color'),
+    path('colors/', ColorListAPIView.as_view(), name='list_colors'),
+    path('colors/create/', ColorCreateAPIView.as_view(), name='create_color'),
 
-    path('measure-units/', MeasureUnitListCreateApiView.as_view(), name='measure-units'),
-    path('measure-units/<int:pk>/', MeasureUnitRetrieveUpdateDestroyAPIView.as_view(), name='measure-units'),
+    path('colors/detail/<int:pk>/', ColorRetrieveAPIView.as_view(), name='retrieve_color'),
+    path('colors/update/<int:pk>/', ColorUpdateAPIView.as_view(), name='delete_color'),
+    path('colors/destroy/<int:pk>/', ColorDestroyAPIView.as_view(), name='update_color'),
 
-    path('categories/', CategoryListAPIView.as_view(), name='categories'),
-    path('subcategories/', SubCategoryListApiView.as_view(), name='categories'),
+    # Measure units (generic views mixed)
+    path('measure-units/', MeasureUnitListCreateAPIView.as_view(), name='list_create_measure_unit'),
+    path('measure-units/<int:pk>/', MeasureUnitRetrieveUpdateDestroyAPIView.as_view(), name='retrieve_update_destroy_measure_unit'),
+
+    # Categories (generic views mixed)
+    path('categories/', CategoryListCreateAPIView.as_view(), name = 'list_create_category'),
+    path('categories/<int:pk>/', CategoryRetrieveUpdateDestroyAPIView.as_view(), name='retrieve_update_destroy_category'),
+
+    path('subcategories/', SubCategoryListCreateAPIView.as_view(), name = 'list_create_sub_category'),
+    path('subcategories/<int:pk>/', SubCategoryRetrieveUpdateDestroyAPIView.as_view(), name='retrieve_update_destroy_sub_category'),
 ]

@@ -2,9 +2,10 @@ from rest_framework import serializers
 
 from admin_settings.models import SubCategory, Category, Color, MeasureUnit
 
-class DefinedConfigurations(serializers.Serializer):
-    id = serializers.IntegerField()
-    name = serializers.CharField(max_length=70)
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
 
 class ColorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,5 +25,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         category = Category.objects.get(id = data['category'])
-        data['category'] = DefinedConfigurations(category).data
+        data['category'] = CategorySerializer(category).data
         return data
+
+

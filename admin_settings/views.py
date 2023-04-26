@@ -5,40 +5,42 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, UpdateAPIView,\
     DestroyAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
-from admin_settings.serializers import DefinedConfigurations, SubCategorySerializer, \
-    ColorSerializer, MeasureUnitSerializer
+from admin_settings.serializers import SubCategorySerializer, ColorSerializer, \
+    MeasureUnitSerializer, CategorySerializer
 from admin_settings.models import Color, Category, SubCategory, MeasureUnit
 from admin_settings.permissions import IsAdminOrReadOnly
 
+# Colors (generic views by separate)
 class ColorListAPIView(ListAPIView):
 
     def get_queryset(self):
         return Color.objects.all()
 
     def get_serializer_class(self):
-        return DefinedConfigurations
+        return ColorSerializer
 
-class ColorCreateApiView(CreateAPIView):
+class ColorCreateAPIView(CreateAPIView):
     serializer_class = ColorSerializer
     permission_classes = [IsAdminUser]
 
-class ColorRetrieveApiView(RetrieveAPIView):
+class ColorRetrieveAPIView(RetrieveAPIView):
     queryset = Color.objects.all()
     serializer_class = ColorSerializer
 
-class ColorUpdateApiView(UpdateAPIView):
+class ColorUpdateAPIView(UpdateAPIView):
     queryset = Color.objects.all()
     serializer_class = ColorSerializer
+    permission_classes = [IsAdminUser]
 
-class ColorDestroyApiView(DestroyAPIView):
+class ColorDestroyAPIView(DestroyAPIView):
     queryset = Color.objects.all()
+    permission_classes = [IsAdminUser]
 
-
-class MeasureUnitListCreateApiView(ListCreateAPIView):
+# Measure units (generic views mixed)
+class MeasureUnitListCreateAPIView(ListCreateAPIView):
     queryset = MeasureUnit.objects.all()
     serializer_class = MeasureUnitSerializer
     permission_classes = [IsAdminOrReadOnly]
-
 
 class MeasureUnitRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = MeasureUnit.objects.all()
@@ -46,23 +48,29 @@ class MeasureUnitRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAdminOrReadOnly]
 
 
-
-
-
-
-
-
-
-
-
-class CategoryListAPIView(ListAPIView):
+# Categories (generic views mixed)
+class CategoryListCreateAPIView(ListCreateAPIView):
+    permission_classes = [IsAdminOrReadOnly]
+    serializer_class = CategorySerializer
     queryset = Category.objects.all()
-    serializer_class = DefinedConfigurations
 
-class SubCategoryListApiView(ListAPIView):
+class CategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAdminOrReadOnly]
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+
+# Sub Categories (generic views mixed)
+class SubCategoryListCreateAPIView(ListCreateAPIView):
+    permission_classes = [IsAdminOrReadOnly]
     serializer_class = SubCategorySerializer
 
     def get_queryset(self):
-        if 'category_id' in self.request.query_params:
-            return SubCategory.objects.filter(category = self.request.query_params['category_id'])
-        return SubCategory.objects.all()
+        if not 'category' in self.request.query_params:
+            return SubCategory.objects.all()
+        return SubCategory.objects.filter(category__id=self.request.query_params['category'])
+
+class SubCategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAdminOrReadOnly]
+    serializer_class = SubCategorySerializer
+    queryset = SubCategory.objects.all()
