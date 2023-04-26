@@ -1,10 +1,20 @@
 from rest_framework import serializers
 
-from admin_settings.models import SubCategory, Category
+from admin_settings.models import SubCategory, Category, Color, MeasureUnit
 
 class DefinedConfigurations(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField(max_length=70)
+
+class ColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Color
+        fields = '__all__'
+
+class MeasureUnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MeasureUnit
+        fields = '__all__'
 
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
