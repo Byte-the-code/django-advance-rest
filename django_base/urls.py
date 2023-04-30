@@ -18,5 +18,6 @@ urlpatterns = [
 
     path('users/', include('users.urls')),
     path('admin-settings/', include('admin_settings.urls')),
+    path('products/', include('products.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

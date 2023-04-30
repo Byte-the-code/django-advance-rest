@@ -18,6 +18,11 @@ class Product(models.Model):
     color = models.ForeignKey(Color, on_delete=models.SET_NULL, related_name='products', null=True, blank=True)
     measure_unit = models.ForeignKey(MeasureUnit, on_delete=models.SET_NULL, related_name='products', null=True, blank=True)
 
+    creation_date = models.DateTimeField(auto_now_add=True)
+    is_distinguished = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
+    is_admin_banned = models.BooleanField(default=False)
+
     def __str__(self):
         return f'{self.owner.get_full_name()} - {self.name}'
     
