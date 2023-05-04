@@ -20,6 +20,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name = 'profile')
     birth_date = models.DateField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profile_image', blank=True)
+    is_distinguished = models.BooleanField(default=False)
 
 class UserDocumentation(models.Model):
 

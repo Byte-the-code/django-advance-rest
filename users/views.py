@@ -5,10 +5,12 @@ from rest_framework import status
 
 from django.db.models import Q, Count, Value, CharField
 from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404
 from django.db.models.functions import Concat
 from django.core.paginator import Paginator
 from django.core.mail import EmailMessage
 from django.conf import settings
+
 
 from users.serializers import UserDocumentationUpdateSerializer, UserDocumentationSerializer, \
     UserDocumentationListSerializer, UserListSerializer, SellerListSerializer
@@ -97,7 +99,6 @@ class UserDocumentationAdminView(APIView):
         self.send_mail(document.user, document_status == 'approved', document.rejection_reason)
 
         return Response('Document status updated', status=status.HTTP_200_OK)
-
 
 class UserListView(APIView):
     permission_classes = [IsAdminUser]
@@ -196,3 +197,25 @@ class SellersListView(APIView):
 
         except Exception as e:
             return Response({'errors':str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class DistinguishUserView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        if not user.is_seller:
+            return Response({'error':'User is not a seller'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not 'is_distinguished' in request.data:
+            return Response({'error':'Missing is_distinguished'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if request.data['is_distinguished'].lower() == 'true':
+            is_distinguished = True
+        elif request.data['is_distinguished'].lower() == 'false':
+            is_distinguished = False
+        else:
+            return Response({'error':'is_distinguished must be true or false'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.profile.is_distinguished = is_distinguished
+        user.profile.save()
+        return Response({'success':f'User {user} is_distinguisted state is {is_distinguished}'}, status=status.HTTP_200_OK)

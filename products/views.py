@@ -19,7 +19,7 @@ class MyProductsView(APIView):
     permission_classes = [IsSeller, ]
 
     def get(self, request):
-        products = request.user.products.filter(is_deleted=False).order_by('id')
+        products = request.user.products.filter().order_by('id')
 
         if 'search' in request.query_params:
             products = products.filter(name__icontains = request.query_params['search'])
@@ -35,6 +35,7 @@ class MyProductsView(APIView):
 
         if 'measure_unit' in request.query_params:
             products = products.filter(measure_unit = request.query_params['measure_unit'])
+            
         order_by = request.query_params.get('order_by', 'id')
         products = products.order_by(order_by)
 
@@ -195,8 +196,11 @@ class BanProductsAdminView(APIView):
 
         if not 'is_admin_banned' in request.data:
             return Response({'error':'is_admin_banned field is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if request.data['is_admin_banned'].lower() not in ['true', 'false']:
+            return Response({'error':'is_admin_banned field must be true or false'}, status=status.HTTP_400_BAD_REQUEST)
 
-        product = get_object_or_404(Product, pk = pk, is_deleted=False)
+        product = get_object_or_404(Product, pk = pk)
         product.is_admin_banned = request.data['is_admin_banned']
         product.save()
 
