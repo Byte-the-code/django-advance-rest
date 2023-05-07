@@ -4,8 +4,8 @@ class IsSeller(BasePermission):
     """
     Allows access only to seller users.
     """
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.user_type == 'seller'
+    def has_permission(self, view):
+        return view.request.user.is_authenticated and view.request.user.user_type == 'seller'
 
 class IsSellerOrReadOnly(BasePermission):
     """
@@ -18,3 +18,13 @@ class IsSellerOrReadOnly(BasePermission):
             request.user.is_authenticated and
             request.user.user_type == 'seller'
         )
+
+class IsOwner(BasePermission):
+    """
+    Allows access only to object owner.
+    """
+
+
+
+    # def has_object_permission(self, request, view, obj):
+    #     return obj.seller == request.user

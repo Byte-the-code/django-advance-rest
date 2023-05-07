@@ -1,0 +1,1841 @@
+{
+	"info": {
+		"_postman_id": "21398749-6652-4d5f-8d2c-0d62d1614743",
+		"name": "Rest-project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18007906"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.collectionVariables.set(\"Authorization\", \"Token \" + jsonData.key);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "admin@admin.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "admin123123",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "user5@gmail.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "usuario123123",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/dj-rest-auth/login/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"dj-rest-auth",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "user5@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password1",
+									"value": "usuario123123",
+									"type": "text"
+								},
+								{
+									"key": "password2",
+									"value": "usuario123123",
+									"type": "text"
+								},
+								{
+									"key": "user_type",
+									"value": "seller",
+									"type": "text"
+								},
+								{
+									"key": "first_name",
+									"value": "user",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "5",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/registration/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"registration",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend email verification",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "user1@gmail.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/dj-rest-auth/resend-email/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"dj-rest-auth",
+								"resend-email",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Password change",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "new_password1",
+									"value": "admin123123",
+									"type": "text"
+								},
+								{
+									"key": "new_password2",
+									"value": "admin123123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/dj-rest-auth/password/change/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"dj-rest-auth",
+								"password",
+								"change",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{url}}/dj-rest-auth/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"dj-rest-auth",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "first_name",
+									"value": "user",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/dj-rest-auth/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"dj-rest-auth",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User List Admin",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{url}}/users/?order_by=id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								""
+							],
+							"query": [
+								{
+									"key": "is_active",
+									"value": "True",
+									"description": "True/False",
+									"disabled": true
+								},
+								{
+									"key": "user_type",
+									"value": "buyer",
+									"description": "buyer/seller",
+									"disabled": true
+								},
+								{
+									"key": "order_by",
+									"value": "id",
+									"description": "first_name, last_name, email"
+								},
+								{
+									"key": "search",
+									"value": "admin user",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sellers List",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{url}}/users/sellers/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"sellers",
+								""
+							],
+							"query": [
+								{
+									"key": "document_status",
+									"value": "rejected",
+									"description": "not uploaded, uploaded, approved, rejected (ADMIN ONLY)",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "user",
+									"disabled": true
+								},
+								{
+									"key": "order_by",
+									"value": "date_joined",
+									"description": "first_name, last_name, date_joined",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"description": "Uploaded, Approved, Rejected",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get distiguished users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users/distinguish/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"distinguish",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update distiguished users ADMIN",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "is_distinguished",
+									"value": "True",
+									"description": "True/False",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/users/distinguish/3/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"distinguish",
+								"3",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Documentation",
+			"item": [
+				{
+					"name": "Get my documentation",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/users/documentation/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"documentation",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload my documentation",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "document_type",
+									"value": "DNI",
+									"type": "text"
+								},
+								{
+									"key": "document_identifier",
+									"value": "317638822",
+									"type": "text"
+								},
+								{
+									"key": "front_image",
+									"type": "file",
+									"src": "/C:/Users/lucac/Desktop/Trabajo/_extras/test.png"
+								},
+								{
+									"key": "back_image",
+									"type": "file",
+									"src": "/C:/Users/lucac/Desktop/Trabajo/_extras/test.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/users/documentation/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"documentation",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ADMIN Get user documentation",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/users/admin-documentation/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"admin-documentation",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ADMIN Respond user documentation",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Authorization}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "document_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "rejected",
+									"description": "rejected/approved",
+									"type": "text"
+								},
+								{
+									"key": "rejected_reason",
+									"value": "Documentos vencidos",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/users/admin-documentation/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"admin-documentation",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Products",
+					"item": [
+						{
+							"name": "Get my own products",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/products/my-products/?color=1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"my-products",
+										""
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "coca cola",
+											"disabled": true
+										},
+										{
+											"key": "category",
+											"value": "8",
+											"disabled": true
+										},
+										{
+											"key": "subcategory",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "ordering",
+											"value": "full_price",
+											"description": "name, price, creation_date",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "9",
+											"disabled": true
+										},
+										{
+											"key": "page_size",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "color",
+											"value": "1"
+										},
+										{
+											"key": "seller__user_type",
+											"value": "seller",
+											"disabled": true
+										},
+										{
+											"key": "orders_count",
+											"value": "111",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create new product",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Coca cola life",
+											"type": "text"
+										},
+										{
+											"key": "SKU",
+											"value": "192678935",
+											"type": "text"
+										},
+										{
+											"key": "price",
+											"value": "450",
+											"type": "text"
+										},
+										{
+											"key": "image_1",
+											"type": "file",
+											"src": "/C:/Users/lucac/Desktop/Trabajo/_extras/test.png"
+										},
+										{
+											"key": "description",
+											"value": "testing",
+											"type": "text"
+										},
+										{
+											"key": "category",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "subcategory",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "color",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "measure_unit",
+											"value": "1",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "is_distinguished",
+											"value": "True",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/products/my-products/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"my-products",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Products",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/products/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										""
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "admin",
+											"disabled": true
+										},
+										{
+											"key": "category",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "subcategory",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "order_by",
+											"value": "name",
+											"description": "name, price, creation_date",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "per_page",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get product detail",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/products/my-products/2/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"my-products",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update product",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Coca cola life",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "sku",
+											"value": "192678935",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "price",
+											"value": "450",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "principal_image",
+											"type": "file",
+											"src": "/C:/Users/lucac/Desktop/Trabajo/_extras/test.png",
+											"disabled": true
+										},
+										{
+											"key": "description",
+											"value": "testing",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "category",
+											"value": "1",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "subcategory",
+											"value": "1",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "color",
+											"value": "1",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "measure_unit",
+											"value": "1",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "is_distinguished",
+											"value": "True",
+											"description": "False/True",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/products/my-products/2/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"my-products",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete product",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/products/my-products/3/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"my-products",
+										"3",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Mark distiguished  product",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{url}}/products/my-products/2/mark-distinguished/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"my-products",
+										"2",
+										"mark-distinguished",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Unmark distiguished  product",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{url}}/products/my-products/2/unmark-distinguished/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"my-products",
+										"2",
+										"unmark-distinguished",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Ban product ADMIN",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{url}}/products/2/ban-product/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"2",
+										"ban-product",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Unban product ADMIN",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{url}}/products/2/unban-product/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"2",
+										"unban-product",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Buy products",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"products\":[\r\n        {\r\n            \"pk\":1,\r\n            \"quantity\":2\r\n        },\r\n        {\r\n            \"pk\":2,\r\n            \"quantity\":1\r\n        },\r\n        {\r\n            \"pk\":3,\r\n            \"quantity\":3\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/products/all-products/buy-product/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"all-products",
+										"buy-product",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Extra images",
+					"item": [
+						{
+							"name": "Get product extra images",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/products/extra-images/?product_id=1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"products",
+										"extra-images",
+										""
+									],
+									"query": [
+										{
+											"key": "product_id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Add products massive",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{url}}/products/my-products/upload-product-massive/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"products",
+								"my-products",
+								"upload-product-massive",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin settings",
+			"item": [
+				{
+					"name": "Colors",
+					"item": [
+						{
+							"name": "Get colors",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin-settings/colors/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"colors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create colors",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "purple",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/colors/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"colors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get color detail",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/colors/6/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"colors",
+										"6",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update color",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "verde esmeralda",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/colors/3/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"colors",
+										"3",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete color",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/colors/6/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"colors",
+										"6",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Measure units",
+					"item": [
+						{
+							"name": "Get measure units",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin-settings/measure-units/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"measure-units",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create measure units",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "unidades",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/measure-units/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"measure-units",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get measure unit",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin-settings/measure-units/2/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"measure-units",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update measure unit",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "gramo",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/measure-units/2/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"measure-units",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete measure unit",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/admin-settings/measure-units/2/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"measure-units",
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Categories",
+					"item": [
+						{
+							"name": "Get categories",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin-settings/categories/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"categories",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create category",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Electrodomesticos",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/categories/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"categories",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get category",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin-settings/categories/3/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"categories",
+										"3",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update category",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Electrodomesticos",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/categories/3/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"categories",
+										"3",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete category",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/categories/3/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"categories",
+										"3",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Sub categories",
+					"item": [
+						{
+							"name": "Get subcategories",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin-settings/subcategories/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"subcategories",
+										""
+									],
+									"query": [
+										{
+											"key": "category_id",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create sub categoty",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name ",
+											"value": "Carne picada",
+											"type": "text"
+										},
+										{
+											"key": "category",
+											"value": "2",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/subcategories/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"subcategories",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get subcategory",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/admin-settings/subcategories/5/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"subcategories",
+										"5",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update subcategory",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "cerveza",
+											"type": "text"
+										},
+										{
+											"key": "category",
+											"value": "1",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/subcategories/5/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"subcategories",
+										"5",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete subcategory",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{Authorization}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{url}}/admin-settings/subcategories/5/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"admin-settings",
+										"subcategories",
+										"5",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"if (pm.request.headers.get(\"Authorization\") === undefined){",
+					"    pm.request.headers.add({",
+					"    key:\"Authorization\",",
+					"    value:pm.globals.get(\"Authorization\")",
+					"    });",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		},
+		{
+			"key": "Authorization",
+			"value": "Token 52eaccb553dfb31b0f31403c071968ffe2e09266",
+			"type": "string"
+		}
+	]
+}

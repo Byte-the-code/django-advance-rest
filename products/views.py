@@ -1,4 +1,6 @@
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -9,199 +11,132 @@ from django.db.models.functions import Concat
 from django.core.paginator import Paginator
 
 from admin_settings.models import SubCategory
-from products.permissions import IsSeller, IsSellerOrReadOnly
-from products.serializers import ProductListSerializer, ProductSerializer
+from products.permissions import IsSeller, IsSellerOrReadOnly, IsOwner
+from products.serializers import ProductListSerializer, ProductSerializer, ProductCreateSerializer
 from products.models import Product
 
 
-# Products
-class MyProductsView(APIView):
-    permission_classes = [IsSeller, ]
 
-    def get(self, request):
-        products = request.user.products.filter().order_by('id')
+class MyproductsViewSet(ModelViewSet):
 
-        if 'search' in request.query_params:
-            products = products.filter(name__icontains = request.query_params['search'])
+    def get_permissions(self):
+        if self.action in ['list', 'create']:
+            return [IsSeller]
+        else:
+            return []
 
-        if 'category' in request.query_params:
-            products = products.filter(category = request.query_params['category'])
+    def get_queryset(self):
+        products = self.request.user.products.filter().order_by('id')
 
-        if 'subcategory' in request.query_params:
-            products = products.filter(subcategory = request.query_params['subcategory'])
+        if 'search' in self.request.query_params:
+            products = products.filter(name__icontains = self.request.query_params['search'])
 
-        if 'color' in request.query_params:
-            products = products.filter(color = request.query_params['color'])
+        if 'category' in self.request.query_params:
+            products = products.filter(category = self.request.query_params['category'])
 
-        if 'measure_unit' in request.query_params:
-            products = products.filter(measure_unit = request.query_params['measure_unit'])
+        if 'subcategory' in self.request.query_params:
+            products = products.filter(subcategory = self.request.query_params['subcategory'])
+
+        if 'color' in self.request.query_params:
+            products = products.filter(color = self.request.query_params['color'])
+
+        if 'measure_unit' in self.request.query_params:
+            products = products.filter(measure_unit = self.request.query_params['measure_unit'])
             
-        order_by = request.query_params.get('order_by', 'id')
-        products = products.order_by(order_by)
+        order_by = self.request.query_params.get('order_by', 'id')
+        return products.order_by(order_by)
 
-        per_page = request.query_params.get('per_page', 5)
-        page = request.query_params.get('page', 1)
-        paginator = Paginator(products, per_page)
-        data = paginator.page(page)
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ProductListSerializer
+        elif self.action == 'create':
+            return ProductCreateSerializer
+        else:
+            return ProductSerializer
 
-        serializer = ProductListSerializer(data, many=True)
-
-
-        return Response({'page':page, 'total_pages':paginator.num_pages, 
-                    'total_items':products.count(), 'data':serializer.data},
-                    status=status.HTTP_200_OK)
-
-    def post(self, request):
-
-        if 'category' in request.data and 'subcategory' in request.data:
-            if not SubCategory.objects.filter(id=request.data['subcategory'], category__id=request.data['category']).exists():
-                return Response({'error': 'That subcategory does not belong to the given category'}, status=status.HTTP_400_BAD_REQUEST)
-
+    def create(self, request, *args, **kwargs):
         data = request.data.copy()
         data['owner'] = request.user.pk
-        data['is_deleted'] = False
-        data['is_admin_banned'] = False
-        data['is_distinguished'] = False
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-        serializer = ProductSerializer(data=data)
+    @action(detail=True, methods=['patch'], url_path='mark-distinguished')
+    def mark_distinguished(self, request, *args, **kwargs):
+        instance = self.get_object()
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'data':serializer.data}, status=status.HTTP_200_OK)
+        if instance.is_distinguished:
+            return Response('Product is already distinguished', status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({'error':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        if instance.owner.products.filter(is_distinguished=True, is_deleted = False).count() >= 3:
+            return Response('You have already distinguished 3 products', status=status.HTTP_400_BAD_REQUEST)
 
-class ProductsRetrieveUpdateDestroyView(APIView):
-    permission_classes = [IsSellerOrReadOnly]
+        instance.is_distinguished = True
+        instance.save()
+        return Response('Product marked as distinguished', status=status.HTTP_200_OK)
 
-    def get(self, request, pk):
-        product = get_object_or_404(Product, pk = pk, is_deleted=False)
-        if not (request.user.is_authenticated and request.user == product.owner):
+    @action(detail=True, methods=['patch'], url_path='unmark-distinguished')
+    def unmark_distinguished(self, request, *args, **kwargs):
+        instance = self.get_object()
 
-            if product.is_admin_banned:
-                return Response({'error':'This product is banned by an admin'}, status=status.HTTP_400_BAD_REQUEST)
+        if not instance.is_distinguished:
+            return Response('Product is not distinguished', status=status.HTTP_400_BAD_REQUEST)
 
-            if product.owner.documentation.status != 'Approved':
-                return Response({'error':'The seller does not have documents approved'}, status=status.HTTP_400_BAD_REQUEST)
+        instance.is_distinguished = False
+        instance.save()
+        return Response('Product unmarked as distinguished', status=status.HTTP_200_OK)
 
-        serializer = ProductSerializer(product)
+class ProductsViewSet(ReadOnlyModelViewSet):
+    permission_classes = [AllowAny]
+    serializer_class = ProductListSerializer
 
-        return Response({'data':serializer.data}, status=status.HTTP_200_OK)
-
-    def patch(self, request, pk):
-        product = get_object_or_404(Product, pk = pk, is_deleted=False)
-        if not (request.user.is_authenticated and request.user == product.owner):
-            return Response({'error':'You are not the owner of this product'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if 'category' in request.data and 'subcategory' in request.data:
-            if not SubCategory.objects.filter(id=request.data['subcategory'], category__id=request.data['category']).exists():
-                return Response({'error': 'That subcategory does not belong to the given category'}, status=status.HTTP_400_BAD_REQUEST)
-
-        data = request.data.copy()
-        data['owner'] = product.owner.pk
-        data['is_deleted'] = product.is_deleted
-        data['is_admin_banned'] = product.is_admin_banned
-        data['is_distinguished'] = product.is_distinguished
-
-        serializer = ProductSerializer(product, data=data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'data':serializer.data}, status=status.HTTP_200_OK)
-
-        return Response({'error':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        product = get_object_or_404(Product, pk = pk, is_deleted=False)
-        if not (request.user.is_authenticated and request.user == product.owner):
-            return Response({'error':'You are not the owner of this product'}, status=status.HTTP_400_BAD_REQUEST)
-
-        product.is_deleted = True
-        product.save()
-
-        return Response({'data':'Product deleted successfully'}, status=status.HTTP_200_OK)
-
-class ProductDistinguisehedView(APIView):
-    permission_classes = [IsSeller]
-    def patch(self, request, pk):
-
-        product = get_object_or_404(Product, pk = pk, is_deleted=False)
-        if request.user != product.owner:
-            return Response({'error':'You are not the owner of this product'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if 'is_distinguished' not in request.data:
-            return Response({'error': 'is_distinguished is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        is_distinguished = request.data['is_distinguished'].lower() == 'true'
-        if is_distinguished: # if is_distinguished is true
-            if product.is_distinguished:
-                return Response({'error': 'This product is already distinguished'}, status=status.HTTP_400_BAD_REQUEST)
-            if product.owner.products.filter(is_distinguished=True).count() >= 3:
-                return Response({'error': 'You have already distinguished 3 products'}, status=status.HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        if self.request.user.is_authenticated and self.request.user.is_superuser:
+            products = Product.objects.filter(
+                        owner__documentation__status='approved',
+                        is_deleted=False,).order_by('id')
         else:
-            if not product.is_distinguished:
-                return Response({'error': 'This product is not distinguished'}, status=status.HTTP_400_BAD_REQUEST)
+            products = Product.objects.filter(
+                        owner__documentation__status='approved',
+                        is_deleted=False,
+                        is_admin_banned=False).order_by('id')
 
-        product.is_distinguished = is_distinguished
-        product.save()
-        return Response({'data': f'The product distinguished state is {product.is_distinguished}'}, status=status.HTTP_200_OK)
-
-class ProductsListView(APIView):
-    permission_classes = []
-
-    def get(self, request):
-        products = Product.objects.filter(
-                    owner__documentation__status='approved',
-                    is_deleted=False,
-                    is_admin_banned=False).order_by('id')
-
-        if 'search' in request.query_params:
+        if 'search' in self.request.query_params:
             products = (products.annotate(search_field = 
                             Concat('name', Value(' '), 
                             'owner__first_name', Value(' '), 
                             'owner__last_name'))
-                            .filter(search_field__icontains = request.query_params['search']))
+                            .filter(search_field__icontains = self.request.query_params['search']))
 
-        if 'category' in request.query_params:
-            products = products.filter(category = request.query_params['category'])
+        if 'category' in self.request.query_params:
+            products = products.filter(category = self.request.query_params['category'])
 
-        if 'subcategory' in request.query_params:
-            products = products.filter(subcategory = request.query_params['subcategory'])
+        if 'subcategory' in self.request.query_params:
+            products = products.filter(subcategory = self.request.query_params['subcategory'])
 
-        if 'color' in request.query_params:
-            products = products.filter(color = request.query_params['color'])
+        if 'color' in self.request.query_params:
+            products = products.filter(color = self.request.query_params['color'])
 
-        if 'measure_unit' in request.query_params:
-            products = products.filter(measure_unit = request.query_params['measure_unit'])
+        if 'measure_unit' in self.request.query_params:
+            products = products.filter(measure_unit = self.request.query_params['measure_unit'])
 
-        order_by = request.query_params.get('order_by', 'id')
+        order_by = self.request.query_params.get('order_by', 'id')
         products = products.order_by(order_by)
 
-        per_page = request.query_params.get('per_page', 5)
-        page = request.query_params.get('page', 1)
-        paginator = Paginator(products, per_page)
-        data = paginator.page(page)
+        return products
 
-        serializer = ProductListSerializer(data, many=True)
+    @action(detail=True, methods=['patch'], url_path='ban-product', permission_classes=[IsAdminUser])
+    def ban_product(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_admin_banned = True
+        instance.save()
+        return Response('Product banned', status=status.HTTP_200_OK)
 
-
-        return Response({'page':page, 'total_pages':paginator.num_pages, 
-                    'total_items':products.count(), 'data':serializer.data},
-                    status=status.HTTP_200_OK)
-
-class BanProductsAdminView(APIView):
-    permission_classes = [IsAdminUser]
-
-    def patch(self, request, pk):
-
-        if not 'is_admin_banned' in request.data:
-            return Response({'error':'is_admin_banned field is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if request.data['is_admin_banned'].lower() not in ['true', 'false']:
-            return Response({'error':'is_admin_banned field must be true or false'}, status=status.HTTP_400_BAD_REQUEST)
-
-        product = get_object_or_404(Product, pk = pk)
-        product.is_admin_banned = request.data['is_admin_banned']
-        product.save()
-
-        return Response({'data':f"The product banned state is {request.data['is_admin_banned']}"}, status=status.HTTP_200_OK)
+    @action(detail=True, methods=['patch'], url_path='unban-product', permission_classes=[IsAdminUser])
+    def unban_product(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_admin_banned = False
+        instance.save()
+        return Response('Product unbanned', status=status.HTTP_200_OK)
