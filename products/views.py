@@ -1,3 +1,5 @@
+import mercadopago
+
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.decorators import action
@@ -13,9 +15,9 @@ from django.core.paginator import Paginator
 from admin_settings.models import SubCategory
 from products.permissions import IsSeller, IsSellerOrReadOnly, IsOwner
 from products.serializers import ProductListSerializer, ProductSerializer, ProductCreateSerializer
-from products.models import Product
+from products.models import Product, Order
 
-
+from django_base.settings import MERCADOPAGO_TOKEN
 
 class MyproductsViewSet(ModelViewSet):
 
@@ -140,3 +142,53 @@ class ProductsViewSet(ReadOnlyModelViewSet):
         instance.is_admin_banned = False
         instance.save()
         return Response('Product unbanned', status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], url_path='buy-product')
+    def buy_product(self, request, *args, **kwargs):
+        products = request.data.get('products', None)
+
+        items = []
+        products_ids = []
+
+        if not products:
+            return Response('No products provided', status=status.HTTP_400_BAD_REQUEST)
+        for product in products:
+            try:
+                product_to_buy = Product.objects.get(pk=product['pk'])
+            except Product.DoesNotExist:
+                return Response('Product does not exist', status=status.HTTP_400_BAD_REQUEST)
+            products_ids.append(product_to_buy.pk)
+            items.append({
+                "title": product_to_buy.name,
+                "quantity": product['quantity'],
+                "unit_price": product_to_buy.price,
+            })
+        
+        new_order = Order.objects.create(buyer=request.user)
+        new_order.products.set(products_ids)
+
+        sdk = mercadopago.SDK(MERCADOPAGO_TOKEN)
+        preference_data = {
+            'external_reference': new_order.pk,
+            "items": items,
+        }
+        preference_response = sdk.preference().create(preference_data)
+        preference = preference_response["response"]
+        link = preference.get('init_point', None)
+        return Response(link, status=status.HTTP_201_CREATED)
+    
+    @action(detail=False, methods=['post'], url_path='mercado-pay-notification', permission_classes=[AllowAny])
+    def mercado_pay_notification(self, request, *args, **kwargs):
+        sdk = mercadopago.SDK(MERCADOPAGO_TOKEN)
+        payment_id = request.data['data'].get('id')
+        if not payment_id:
+            return Response('No payment id provided', status=status.HTTP_400_BAD_REQUEST)
+        payment_info = sdk.payment().get(payment_id)
+        payment_info = payment_info['response']
+        if payment_info['status'] == 'approved':
+            external_reference = payment_info['external_reference']
+            order = Order.objects.get(pk=external_reference)
+            order.is_paid = True
+            order.save()
+            return Response('Payment approved', status=status.HTTP_200_OK)
+        return Response('Payment not approved', status=status.HTTP_400_BAD_REQUEST)

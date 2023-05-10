@@ -1,21 +1,21 @@
 from pathlib import Path
+import environ
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env.bool('DEBUG', True)
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6n(1&d=8*)e$-aci+am+q^qlk)z)jzh0frr5y+!ro3yk9w%)6%'
+BASE_URL= env('BASE_URL', default='http://localhost:8000')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+MERCADOPAGO_TOKEN = env('MERCADOPAGO_TOKEN')
 
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = ["*"]
 # Application definition
 
 BASE_APPS = [

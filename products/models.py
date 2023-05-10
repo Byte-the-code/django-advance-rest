@@ -41,3 +41,17 @@ class ExtraImage(models.Model):
     class Meta:
             verbose_name = 'Imagen extra de producto'
             verbose_name_plural = 'Imagenes extra de producto'
+
+
+class Order(models.Model):
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    products = models.ManyToManyField(Product, related_name='orders')
+    creation_date = models.DateTimeField(auto_now_add=True)
+    is_paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.buyer.get_full_name()} order {str(self.id)}'
+    
+    class Meta:
+            verbose_name = 'Orden'
+            verbose_name_plural = 'Ordenes'
