@@ -48,6 +48,8 @@ class Order(models.Model):
     products = models.ManyToManyField(Product, related_name='orders')
     creation_date = models.DateTimeField(auto_now_add=True)
     is_paid = models.BooleanField(default=False)
+    mercado_link = models.CharField(max_length=250, null=True, blank=True)
+    remainder_sended = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.buyer.get_full_name()} order {str(self.id)}'

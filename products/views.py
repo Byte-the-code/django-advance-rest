@@ -175,6 +175,10 @@ class ProductsViewSet(ReadOnlyModelViewSet):
         preference_response = sdk.preference().create(preference_data)
         preference = preference_response["response"]
         link = preference.get('init_point', None)
+
+        new_order.mercado_link = link
+        new_order.save()
+
         return Response(link, status=status.HTTP_201_CREATED)
     
     @action(detail=False, methods=['post'], url_path='mercado-pay-notification', permission_classes=[AllowAny])

@@ -37,6 +37,8 @@ THIRD_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+
+    'django_crontab',
 ]
 
 MY_APPS = [
@@ -172,6 +174,7 @@ REST_AUTH_SERIALIZERS = {
 }
 
 
+AUTH_USER_MODEL = 'users.User'
 #<---------------------- Auth configurations ---------------------->
 
 #<---------------------- Email configurations ---------------------->
@@ -179,4 +182,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #<---------------------- Email configurations ---------------------->
 
 
-AUTH_USER_MODEL = 'users.User'
+#<---------------------- Cron configurations ---------------------->
+CRONJOBS = [
+    ('* */5 * * *', 'products.cron.order_reminder_sender')
+]
+#<---------------------- Cron configurations ---------------------->
