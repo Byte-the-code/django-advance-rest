@@ -11,6 +11,7 @@ from django.db.models import Value
 from django.shortcuts import get_object_or_404
 from django.db.models.functions import Concat
 from django.core.paginator import Paginator
+from django.http import HttpResponse
 
 from admin_settings.models import SubCategory
 from products.permissions import IsSeller, IsSellerOrReadOnly, IsOwner
@@ -18,6 +19,7 @@ from products.serializers import ProductListSerializer, ProductSerializer, Produ
 from products.models import Product, Order
 
 from django_base.settings import MERCADOPAGO_TOKEN
+from products.tasks import load_products
 
 class MyproductsViewSet(ModelViewSet):
 
@@ -89,6 +91,12 @@ class MyproductsViewSet(ModelViewSet):
         instance.is_distinguished = False
         instance.save()
         return Response('Product unmarked as distinguished', status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], url_path='upload-product-massive', permission_classes=[IsSeller])
+    def upload_product_massive(self, request, *args, **kwargs):
+        load_products.delay(request.user.pk)
+        return Response('Products are being loaded', status=status.HTTP_200_OK)
+
 
 class ProductsViewSet(ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
